@@ -1,0 +1,163 @@
+﻿@page "/peliculas/buscar"
+@inject IRepository repositorio
+@inject NavigationManager navigationManager
+
+<h3>Filtro películas</h3>
+
+<div class="row g-3 align-items-center mb-3">
+	<div class="col-sm-3">
+		<input type="text" class="form-control" id="titulo" placeholder="Título película"
+		autocomplete="off"
+		@bind-value="titulo" @bind-value:event="oninput"
+		@onkeypress="@((KeyboardEventArgs e) => TituloKeyPress(e))"
+		/>
+	</div>
+	<div class="col-sm-3">
+		<select class="form-select" @bind="generoSeleccionado">
+			<option value="0">-- Seleccione un género --</option>
+			@foreach (var item in generos)
+			{
+				<option value="@item.Id">@item.Nombre</option>
+			}
+		</select>
+	</div>
+
+	<div class="col-sm-6" style="display:flex;">
+		<div class="form-check me-2">
+			<input type="checkbox" class="form-check-input" id="estrenos" @bind="futurosEstrenos" />
+			<label class="form-check-label" for="estrenos">Futuros Estrenos</label>
+		</div>
+		<div class="form-check me-2">
+			<input type="checkbox" class="form-check-input" id="cartelera" @bind="enCartelera" />
+			<label class="form-check-label" for="estrenos">En cartelera</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="masVotadas" @bind="masVotadas" />
+			<label class="form-check-label" for="estrenos">Más votadas</label>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<button type="button" class="btn btn-primary" @onclick="CargarNuevasPeliculas">Filtrar</button>
+		<button type="button" class="btn btn-danger" @onclick="LimpiarOnClick">Limpiar</button>
+	</div>
+</div>
+
+<Paginacion PaginaActual="paginaActual" 
+	PaginasTotales="paginasTotales" 
+	PaginaSeleccionada="PaginaSeleccionas"></Paginacion>
+
+<ListadoPeliculas Peliculas="Peliculas" />
+
+@code {
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public string titulo { get; set; } = "";
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "generoid")]
+	public int generoSeleccionado { get; set; }
+	private List<Genero> generos = new List<Genero>();
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "estrenos")]
+	public bool futurosEstrenos { get; set; } = false;
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public bool enCartelera { get; set; } = false;
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public bool masVotadas { get; set; } = false;
+	private List<Pelicula>? Peliculas;
+	Dictionary<string, string> queryStringDic = new Dictionary<string, string>();
+	[Parameter]
+	[SupplyParameterFromQuery(Name = "pagina")]
+	public int paginaActual { get; set; } = 1;
+	private int paginasTotales;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (paginaActual == 0)
+		{
+			paginaActual = 1;
+		}
+
+		await ObtenerGeneros();
+		var queryStrings = GenerarQueryString();
+		await RealizarBusqueda(queryStrings);
+	}
+
+	private async Task PaginaSeleccionas(int pagina)
+	{
+		paginaActual = pagina;
+		await CargarNuevasPeliculas();
+	}
+
+	private async Task ObtenerGeneros()
+	{
+		var respuestaHTTP = await repositorio.Get<List<Genero>>("api/generos");
+		generos = respuestaHTTP.Response;
+	}
+
+	private async Task TituloKeyPress(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter")
+		{
+			await CargarNuevasPeliculas();
+		}
+	}
+
+	private async Task CargarNuevasPeliculas()
+	{
+		var queryStrings = GenerarQueryString();
+		navigationManager.NavigateTo("/peliculas/buscar?" + queryStrings);
+		await RealizarBusqueda(queryStrings);
+	}
+
+	private async Task RealizarBusqueda(string queryStrings)
+	{
+		var respuestaHTTP = await repositorio.Get<List<Pelicula>>("api/peliculas/filtrar?" + queryStrings);
+		paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
+		Peliculas = respuestaHTTP.Response;
+	}
+
+	private string GenerarQueryString()
+	{
+		if (queryStringDic is null)
+		{
+			queryStringDic = new Dictionary<string, string>();
+		}
+		queryStringDic["generoid"] = generoSeleccionado.ToString();
+		queryStringDic["titulo"] = titulo ?? string.Empty;
+		queryStringDic["encartelera"] = enCartelera.ToString();
+		queryStringDic["estrenos"] = futurosEstrenos.ToString();
+		queryStringDic["masvotadas"] = masVotadas.ToString();
+		queryStringDic["pagina"] = paginaActual.ToString();
+		// Nos sirve para crear los query string que es lo siguiente en la url 
+		// y le vamos  dar unos valores por defecto, por si hay valores vacíos
+		// generoid=7&titulo=name...
+
+		var valoresPorDefecto = new List<string>() { "false", "", "0" };
+
+		//Tomamos los valores del diccionario con un join usando el &, usamos el where para definir los valores que queremos
+		// le decimos que solo queremos los que no estan contenidos en por defecto 
+		// y despues hacemos el select paara hacer una proyección 
+		// y decirle que los queremos en el formato clave = valor que sería parecido a generoid=7&titulo=name... 
+		// finalmente hacemos el ToArray() para que pueda coger los string creads y los pueda escribir en el formato query
+		return string.Join("&", queryStringDic
+		.Where(x => !valoresPorDefecto.Contains(x.Value.ToLower()))
+		.Select(x => $"{x.Key}={System.Web.HttpUtility.UrlEncode(x.Value)}").ToArray()
+		);
+	}
+
+	private async Task LimpiarOnClick()
+	{
+
+		titulo = "";
+		generoSeleccionado = 0;
+		futurosEstrenos = false;
+		enCartelera = false;
+		masVotadas = false;
+		await CargarNuevasPeliculas();
+	}
+}
+

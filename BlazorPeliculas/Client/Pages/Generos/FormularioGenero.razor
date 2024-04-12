@@ -1,0 +1,71 @@
+﻿@inject SweetAlertService swal
+
+@* De esta manera podemos evitar que el usuario salga de la página sin rellenar el formulario *@
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+	<DataAnnotationsValidator />
+	<div class="mb-3">
+		<label>Nombre:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="Genero.Nombre" />
+			@* ValidationField nos sirve para que salte un mensaje de la validación *@
+			<ValidationMessage For="@(() => Genero.Nombre)" />
+		</div>
+	</div>
+
+	<button class="btn btn-success" type="submit">Guardar</button>
+</EditForm>
+
+@code {
+
+	private EditContext editContext;
+
+	protected override void OnInitialized()
+	{
+		editContext = new(Genero);
+	}
+
+	[EditorRequired]
+	[Parameter]
+	public Genero Genero { get; set; }
+
+	[EditorRequired]
+	[Parameter]
+	public EventCallback OnValidSubmit { get; set; }
+
+	public bool FormularioPostadoConExito { get; set; } = false;
+
+	private async Task OnBeforeInternalNavigation (LocationChangingContext context)
+	{
+		var formularioFueEditado = editContext.IsModified();
+
+		if (!formularioFueEditado)
+		{
+			return;
+		}
+
+		if (FormularioPostadoConExito)
+		{
+			return;
+		}
+
+		// Utilizamos la libreria de SweetAlert para que nos salga en pantalla un alert más bonito, el var de abajo es la config y el siguiente es el que comprueba si confirma o no
+		var resultado = await swal.FireAsync(new SweetAlertOptions
+		{
+			Title = "Confirmación",
+				Text = "¿Deseas abandonar la página y perder los cambios?",
+				Icon = SweetAlertIcon.Warning,
+				ShowCancelButton = true
+		});
+
+		var confirmado = !string.IsNullOrEmpty(resultado.Value);
+
+		if (confirmado)
+		{
+			return;
+		}
+
+		context.PreventNavigation();
+	}
+}

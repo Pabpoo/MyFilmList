@@ -1,0 +1,48 @@
+﻿@* Para definir el Layout se usa el archivo app.razor *@
+@inherits LayoutComponentBase
+@* Este componente es el que tiene todos los componentes de mi aplicación *@
+@inject BlazorPeliculas.Client.Auth.RenovadorToken renovadorToken
+@inject IJSRuntime js
+@inject NavigationManager navigationManager
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4" style="display: flex !important;">
+            <EnlacesAuth />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @* Este body es donde se coloca el cuerpo del componente que estamos renderizando *@
+            @* <CascadingValue Value=@appState> *@
+            @Body
+            @* </CascadingValue> *@
+            @* Aquí puedo colocar lo que quiera para que aparezcan en todas las páginas de mi aplicación *@
+        </article>
+    </main>
+</div>
+
+@code{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await js.InvokeVoidAsync("timerInactivo", DotNetObjectReference.Create(this));
+        renovadorToken.Iniciar();
+    }
+
+    [JSInvokable]
+    public async Task Logout()
+    {
+        var authState = await AuthenticationStateTask;
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            navigationManager.NavigateTo("logout");
+        }
+    }
+}

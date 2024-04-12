@@ -1,0 +1,14 @@
+.vs
+.vs/*
+bin
+bin/*
+obj
+obj/*
+.vscode
+.vscode/*
+__pycache__
+*.pyc
+**/wwwroot/lib
+*.db
+*.csproj.user
+desktop.ini

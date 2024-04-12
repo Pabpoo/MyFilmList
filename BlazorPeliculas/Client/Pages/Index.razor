@@ -1,0 +1,107 @@
+﻿@page "/"
+@page "/index"
+@* @inject ServicesSingleton singleton *@
+@inject IRepository repositorio
+
+@* Modifica el título de la página, el que aprece en la pestaña *@
+<PageTitle>Blazor Películas</PageTitle>
+
+@* Cualquier cosa que pongamos aquí solo se muestra si el usuario está autenticado *@
+@* <AuthorizeView Roles="admin"> *@
+	@* Esto autoriza a ver esto a quien este autenticada *@
+	@* <Authorized> *@
+		@* Con el ClaimType.Name que definimos ahora podemos acceder a él con @context.User.Identity.Name *@
+		@* <p>Estas autorizado para ver esto, @context.User.Identity?.Name</p>
+	</Authorized>
+	<NotAuthorized>
+		<p>No estas autorizado para ver esto</p>
+	</NotAuthorized>
+</AuthorizeView> *@
+
+<div>
+	<h3>En Cartelera</h3>
+	@*@ref="listadoPeliculas"*@
+	<ListadoPeliculas Peliculas="EnCartelera" />
+</div>
+
+<div>
+	<h3>Próximos Estrenos</h3>
+	@*@ref="listadoPeliculas"*@
+	<ListadoPeliculas Peliculas="FuturosEstrenos" />
+</div>
+
+@code {
+	public List<Pelicula>? FuturosEstrenos { get; set; }
+	public List<Pelicula>? EnCartelera { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var respuestaHTTP = await repositorio.Get<HomePageDTO>("api/peliculas");
+
+		if (respuestaHTTP.HttpResponseMessage.IsSuccessStatusCode)
+		{
+			FuturosEstrenos = respuestaHTTP.Response.ProximosEstrenos;
+			EnCartelera = respuestaHTTP.Response.PeliculasEnCartelera;
+		}
+		else
+		{
+			Console.WriteLine(respuestaHTTP.HttpResponseMessage.StatusCode);
+		}
+	}
+
+	// Puedo crear un objeto de un componente para invocar a sus métodos
+	// public ListadoPeliculas? listadoPeliculas;
+
+	// private Dictionary<string, object> EjemploTextBoxParametros = new Dictionary<string, object>()
+	// 								{
+	// 									{"placeholder", "nuevo placeholder2"},
+	// 									{"disabled", "true"},
+	// 								};
+
+	// private void LimpiarPeliculas()
+	// {
+	// 	listadoPeliculas!.LimpiarPeliculas();
+	// }
+
+	// private void AgregarPelicula()
+	// {
+	// 	Peliculas!.Add(new Pelicula { Titulo = "Nuevo", FechaLanzamiento = DateTime.Today });
+	// }
+}
+
+@* Esto agrega conteido a la cabecera, no lo sustituye *@
+@* <HeadContent>
+	<meta name="description" content="Página para visualizar películas" />
+</HeadContent> *@
+
+@* <p>Valor del singleton: @singleton.Valor</p> *@
+
+@* <p>Hola, @StringUtils.Transformar(nombre)</p>
+
+<p>Vamos a sumar 2 + 2 = @(2 + 2)</p>
+
+<button @onclick=@(() => Console.WriteLine("Me han pulsado!"))>Presióname</button>
+
+<button @onclick=@ManejarClickBoton>Presióname</button>
+
+<div>
+	<h3>Película</h3>
+	<p>Titulo: <b>@CadenaPerpetua.Titulo</b></p>
+	<p>Fecha de lanzamiento: <b>@CadenaPerpetua.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+</div> *@
+
+@* <div>
+	<button @onclick="LimpiarPeliculas">
+		Limpiar Peliculas
+	</button>
+</div> *@
+
+@* <BindAfterDemo />
+<div>
+	<h3>Crear nueva Película</h3>
+	<EjmploTextBox placeholder="placeholder index" />
+</div> *@
+
+@* <button @onclick="AgregarPelicula">
+	Agregar Pelicula
+</button> *@
