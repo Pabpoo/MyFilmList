@@ -1,5 +1,6 @@
 ﻿using BlazorPeliculas.Server.Helpers;
 using BlazorPeliculas.Shared.DTO;
+using BlazorPeliculas.Shared.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +15,9 @@ namespace BlazorPeliculas.Server.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public UsuariosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UsuariosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
             this.userManager = userManager;

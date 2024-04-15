@@ -18,10 +18,10 @@ namespace BlazorPeliculas.Server.Controllers
         private readonly ApplicationDbContext context;
         private readonly IAlmacenadorArchivos almacenadorArchivos;
         private readonly IMapper mapper;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly string contenedor = "peliculas";
 
-        public PeliculasController(ApplicationDbContext context, IAlmacenadorArchivos almacenadorArchivos, IMapper mapper, UserManager<IdentityUser> userManager)
+        public PeliculasController(ApplicationDbContext context, IAlmacenadorArchivos almacenadorArchivos, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
             this.almacenadorArchivos = almacenadorArchivos;

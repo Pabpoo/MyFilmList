@@ -15,10 +15,10 @@ namespace BlazorPeliculas.Server.Controllers
     public class VotosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
 
-        public VotosController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+        public VotosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             this.context = context;
             this.userManager = userManager;

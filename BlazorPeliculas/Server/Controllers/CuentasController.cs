@@ -1,4 +1,5 @@
 ﻿using BlazorPeliculas.Shared.DTO;
+using BlazorPeliculas.Shared.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,12 +15,12 @@ namespace BlazorPeliculas.Server.Controllers
     [Route("api/cuentas")]
     public class CuentasController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IConfiguration configuration;
 
         //A través de UserManager podemos crear usuarios
-        public CuentasController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration)
+        public CuentasController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -29,7 +30,7 @@ namespace BlazorPeliculas.Server.Controllers
         [HttpPost("crear")]
         public async Task<ActionResult<UserTokenDTO>> CreateUser([FromBody] UserInfoDTO model)
         {
-            var usuario = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var usuario = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var resultado = await userManager.CreateAsync(usuario, model.Password);
 
             if (resultado.Succeeded)

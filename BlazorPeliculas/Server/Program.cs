@@ -1,5 +1,6 @@
 using BlazorPeliculas.Server;
 using BlazorPeliculas.Server.Helpers;
+using BlazorPeliculas.Shared.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -32,7 +33,7 @@ namespace BlazorPeliculas
             // con esto configuramos automapper en el proyecto, que nos permite mapear unos objetos a otros
             builder.Services.AddAutoMapper(typeof(Program));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
