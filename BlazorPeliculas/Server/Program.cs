@@ -27,6 +27,8 @@ namespace BlazorPeliculas
             var connectionString = builder.Configuration.GetConnectionString("BlazorPeliculas");
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             builder.Services.AddTransient<IAlmacenadorArchivos, AlamcenadorArchivosLocal>();
             builder.Services.AddHttpContextAccessor();
 
