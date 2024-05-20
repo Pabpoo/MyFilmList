@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Este archivo se usa en el proceso de publicación y empaquetado del proyecto web. Para personalizar el comportamiento de este proceso,
+edite el archivo MSBuild. Visite https://go.microsoft.com/fwlink/?LinkID=208121 para obtener más información. 
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAgIwgtJw8OUyIQuqoxzN+dAAAAAACAAAAAAAQZgAAAAEAACAAAAAlYVKoVVNFy1ZE8IgqjGRqlrS5nZUvSLVzuiKh3dOpdwAAAAAOgAAAAAIAACAAAADigwcwgceI6pvmCZyvyrZaH4XCaO+qJgCDZKcP7SosMIAAAABbUkdglnzIXJK0MUjbLD+AdgY201tUbazLcrTmc6if28Mu/B2HkwV7KFrcxZRufsRFXyo+3d2Dd1nQY2S+xBBTVdwIG2xGECvo1HuimTH1iAFCRO9hQjTwiA3sn4JJrIz3CeQOscHwJ7RthkeKwbN1Windne2nEeCxECR7MUMdRkAAAAAzFaEWFdZcTpFvppDcBWL5B1H4fOeJAwuYIpZUh1tYlidNraqkLInOJogtavv/4V6RYCTdzTNgGPuCjvExajap</EncryptedPassword>
+    <History>True|2024-04-27T11:46:10.9574842Z;True|2024-04-27T13:37:45.3061016+02:00;True|2024-04-27T13:35:44.2744777+02:00;True|2024-04-27T13:26:30.4206464+02:00;True|2024-04-27T13:22:29.5046293+02:00;True|2024-04-27T11:23:54.5692188+02:00;True|2024-04-27T11:01:13.1166477+02:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="Kestrel:Certificates:Development:Password">
+      <Value>Data Source=myfilmlistserver.database.windows.net,1433%3bInitial Catalog=MyFilmList%3bUser ID=pablo%3bPassword=ppg%283592%29</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="BlazorPeliculas.Server.ApplicationDbContext">
+      <Value>Data Source=myfilmlistserver.database.windows.net,1433%3bInitial Catalog=MyFilmList%3bUser ID=pablo%3bPassword=ppg%283592%29</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

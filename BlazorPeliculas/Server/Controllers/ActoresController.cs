@@ -65,8 +65,12 @@ namespace BlazorPeliculas.Server.Controllers
 		[HttpPost]
 		public async Task<ActionResult<int>> Post(Actor actor)
 		{
+            if (actor.FechaNacimiento > DateTime.Today)
+            {
+                return BadRequest("La fecha de nacimiento no puede ser futura.");
+            }
 
-			if(!string.IsNullOrWhiteSpace(actor.Foto))
+            if (!string.IsNullOrWhiteSpace(actor.Foto))
 			{
 				var fotoActor = Convert.FromBase64String(actor.Foto);
 				actor.Foto = await almacenadorArchivos.GuardarArchivo(fotoActor, ".jpg", contenedor);

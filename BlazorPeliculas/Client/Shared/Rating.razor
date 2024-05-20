@@ -2,8 +2,8 @@
 {
     var numeroEstrella = i;
     <span 
-        @onclick="@(() => onClickHandle(numeroEstrella))"
-        @onmouseover="@(() => onMouseOverHandle(numeroEstrella))"
+        @onclick="@(() => !Disabled ? onClickHandle(numeroEstrella) : Task.CompletedTask)"
+        @onmouseover="@(() => !Disabled ? onMouseOverHandle(numeroEstrella) : Task.CompletedTask)"
         style="cursor: pointer;"
         class="fa fa-star @(PuntuacionSeleccionada >= i ? "checked" : null)"
     ></span>
@@ -13,6 +13,8 @@
     [Parameter] public int MaximaPuntuacion { get; set; }
     [Parameter] public int PuntuacionSeleccionada { get; set; }
     [Parameter] public EventCallback<int> OnRating { get; set; }
+    // To avoid any user not logged in to vote
+    [Parameter] public bool Disabled { get; set; } = false;
     private bool votado = false;
 
     private async Task onClickHandle(int numeroEstrella)
@@ -22,11 +24,12 @@
         await OnRating.InvokeAsync(PuntuacionSeleccionada);
     }
 
-    private void onMouseOverHandle(int numeroEstrella)
+    private Task onMouseOverHandle(int numeroEstrella)
     {
         if (!votado)
         {
             PuntuacionSeleccionada = numeroEstrella;
         }
+        return Task.CompletedTask;
     }
 }

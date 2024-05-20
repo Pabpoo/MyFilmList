@@ -51,6 +51,39 @@ namespace BlazorPeliculas.Server.Controllers
 
             if (resultado.Succeeded)
             {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                var roles = await userManager.GetRolesAsync(user);
+
+                if (roles.Contains("admin"))
+                {
+                    await signInManager.SignOutAsync();
+                    return BadRequest("Usuario no encontrado");
+                }
+                return await BuildToken(model);
+            }
+            else
+            {
+                return BadRequest("Usuario y/o contraseña incorrecto");
+            }
+        }
+
+        [HttpPost("adminlogin")]
+        public async Task<ActionResult<UserTokenDTO>> AdminLogin([FromBody] UserInfoDTO model)
+        {
+            var resultado = await signInManager.PasswordSignInAsync(model.Email,
+                model.Password, isPersistent: false, lockoutOnFailure: false);
+
+            if (resultado.Succeeded)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                var roles = await userManager.GetRolesAsync(user);
+
+                if (!roles.Contains("admin"))
+                {
+                    await signInManager.SignOutAsync();
+                    return BadRequest("Sólo los administradores pueden iniciar sesión a través de este portal.");
+                }
+
                 return await BuildToken(model);
             }
             else

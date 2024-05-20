@@ -9,7 +9,7 @@ namespace BlazorPeliculas.Shared.DTO
     public class ParametrosBusquedaPeliculasDTO
     {
         public int Pagina { get; set; } = 1;
-        public int CantidadResgistros { get; set; } = 10;
+        public int CantidadResgistros { get; set; } = 18;
         public PaginacionDTO PaginacionDTO
         {
             get

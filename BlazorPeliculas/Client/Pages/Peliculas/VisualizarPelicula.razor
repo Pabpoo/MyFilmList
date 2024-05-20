@@ -2,8 +2,11 @@
 @page "/peliculas/{PeliculaId:int}"
 @* No hay que colorcar restricción de ruta a los strings *@
 @page "/peliculas/{PeliculaId:int}/{NombrePelicula}"
+
 @inject IRepository repositorio
 @inject SweetAlertService swal
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 @if(modelo is null)
 {
@@ -17,10 +20,22 @@ else
     {
         <a class="me-2 badge bg-primary rounded-pill text-decoration-none" href="peliculas/buscar?@genero.Id=@genero.Id">@genero.Nombre</a>
     }
+    <span>
+        | @modelo.Pelicula.FechaLanzamiento.Value.ToString("dd MMM yyyy")
+        | Promedio: @modelo.PromedioVotos.ToString("0.#")/5
+        | Tu voto: <Rating MaximaPuntuacion="5" PuntuacionSeleccionada="modelo.VotoUsuario" OnRating="OnRating" Disabled="!isAuthenticated"></Rating>
 
-    <span>| @modelo.Pelicula.FechaLanzamiento.Value.ToString("dd MMM yyyy") 
-          | Promedio: @modelo.PromedioVotos.ToString("0.#")/5
-          | Tu voto: <Rating MaximaPuntuacion="5" PuntuacionSeleccionada="modelo.VotoUsuario" OnRating="OnRating"></Rating>
+        <i id="btn-agregar-favorita" role="button" class="ms-2 me-1 bi bi-heart@(esFavorita ? "-fill" : "")" style="@(esFavorita ? "color: deeppink;" : "")"
+            @onclick="AgregarOQuitarFavoritas" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(esFavorita ? "Eliminar de" : "Agregar a") 'Favoritas'">
+        </i>
+
+        <i id="btn-agregar-vistas" role="button" class="ms-1 me-2 bi bi-eye@(vista ? "-fill" : "")" style="@(vista ? "color: darkblue;" : "")"
+                @onclick="AgregarOQuitarVistas" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(vista ? "Eliminar de" : "Agregar a") 'Vistas'">
+        </i>
+
+        <i id="btn-agregar-por-ver" role="button" class="mx-1 bi bi-clock@(porVer ? "-fill" : "")" style="@(porVer ? "color: black;" : "")"
+            @onclick="AgregarOQuitarPorVer" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(porVer ? "Eliminar de" : "Agregar a") 'Por Ver'">
+        </i>
     </span>
 
     <div class="d-flex mt-2">
@@ -51,16 +66,33 @@ else
             }
         </div>
     </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $("[data-bs-toggle='tooltip']").tooltip();
+        });
+    </script>
 }
 
 @code {
     [Parameter] public int PeliculaId { get; set; }
     [Parameter] public string NombrePelicula { get; set; } = null!;
     private PeliculaVisualizarDTO? modelo;
+    private bool esFavorita;
+    private bool porVer;
+    private bool vista;
+    private bool isAuthenticated;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity.IsAuthenticated;
+
         var respuestaHTTP = await repositorio.Get<PeliculaVisualizarDTO>($"api/peliculas/{PeliculaId}");
+
+        var añadidaAFavorita = await repositorio.Get<bool>($"api/listaspeliculas/esfavorita/{PeliculaId}");
+        var añadidaAPorVer = await repositorio.Get<bool>($"api/listaspeliculas/esporver/{PeliculaId}");
+        var añadidaAVista = await repositorio.Get<bool>($"api/listaspeliculas/esvista/{PeliculaId}");
 
         if (respuestaHTTP.Error)
         {
@@ -70,6 +102,36 @@ else
         else
         {
             modelo = respuestaHTTP.Response;
+        }
+
+        if (añadidaAFavorita.Error)
+        {
+            var mensajeError = await añadidaAFavorita.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            esFavorita = añadidaAFavorita.Response;
+        }
+
+        if (añadidaAPorVer.Error)
+        {
+            var mensajeError = await añadidaAPorVer.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            porVer = añadidaAPorVer.Response;
+        }
+
+        if (añadidaAVista.Error)
+        {
+            var mensajeError = await añadidaAVista.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            vista = añadidaAVista.Response;
         }
     }
 
@@ -89,4 +151,122 @@ else
             await swal.FireAsync("Exito", "Su voto ha sido registrado", SweetAlertIcon.Success);
         }
     }
+
+    private async Task AgregarOQuitarFavoritas()
+    {
+
+        if (!esFavorita)
+        {
+            var peliculaFavoritaDTO = new PeliculasListasDTO { PeliculaId = modelo.Pelicula.Id };
+            var respuestaHTTP = await repositorio.Post("api/listaspeliculas/favoritas", peliculaFavoritaDTO);
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                esFavorita = true;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido agregada a tus favoritas", SweetAlertIcon.Success);
+            }
+        }
+        else
+        {
+            var respuestaHTTP = await repositorio.Delete($"api/listaspeliculas/eliminardefavoritas/{modelo.Pelicula.Id}");
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                esFavorita = false;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido eliminada de tus favoritas", SweetAlertIcon.Success);
+            }
+        }
+        await JSRuntime.InvokeVoidAsync("updateTooltips", new object[]{});
+        StateHasChanged();
+    }
+
+    private async Task AgregarOQuitarPorVer()
+    {
+        if (!porVer)
+        {
+            var peliculaListaDTO = new PeliculasListasDTO { PeliculaId = modelo.Pelicula.Id };
+            var respuestaHTTP = await repositorio.Post("api/listaspeliculas/porver", peliculaListaDTO);
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                porVer = true;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido agregada a tu lista 'Por Ver'", SweetAlertIcon.Success);
+            }
+        }
+        else{
+            var respuestaHTTP = await repositorio.Delete($"api/listaspeliculas/eliminardeporver/{modelo.Pelicula.Id}");
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                porVer = false;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido eliminada de tu lista 'Por Ver'", SweetAlertIcon.Success);
+            }
+        }
+        await JSRuntime.InvokeVoidAsync("updateTooltips", new object[] { });
+        StateHasChanged();
+    }
+
+    private async Task AgregarOQuitarVistas()
+    {
+        if (!vista)
+        {
+            var peliculaListaDTO = new PeliculasListasDTO { PeliculaId = modelo.Pelicula.Id };
+            var respuestaHTTP = await repositorio.Post("api/listaspeliculas/vistas", peliculaListaDTO);
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                vista = true;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido agregada a tu lista 'Vistas'", SweetAlertIcon.Success);
+            }
+        }
+        else
+        {
+            var respuestaHTTP = await repositorio.Delete($"api/listaspeliculas/eliminardevistas/{modelo.Pelicula.Id}");
+
+            if (respuestaHTTP.Error)
+            {
+                var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+                await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                vista = false;
+                StateHasChanged();
+                await swal.FireAsync("Exito", "La película ha sido eliminada de tu lista 'Vistas'", SweetAlertIcon.Success);
+            }
+        }
+        await JSRuntime.InvokeVoidAsync("updateTooltips", new object[] { });
+        StateHasChanged();
+    }
+
 }

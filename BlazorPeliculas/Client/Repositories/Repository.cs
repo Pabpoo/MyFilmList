@@ -1,6 +1,7 @@
 ﻿using BlazorPeliculas.Shared.Entity;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BlazorPeliculas.Client.Repositories
 {
@@ -15,7 +16,8 @@ namespace BlazorPeliculas.Client.Repositories
 
         private JsonSerializerOptions OpcionesPorDefectoJSON => new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
         };
 
         public async Task<HttpResponseWraper<T>> Get<T>(string url)

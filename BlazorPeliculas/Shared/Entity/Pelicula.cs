@@ -12,6 +12,7 @@ namespace BlazorPeliculas.Shared.Entity
         public string? Resumen { get; set; }
         public bool EnCartelera { get; set; }
         public string? Trailer { get; set; }
+        [Required(ErrorMessage = "La fecha de lanzamiento es requerida.")]
         public DateTime? FechaLanzamiento { get; set; }
 		public string? Poster { get; set; }
 		public List<GeneroPelicula> GenerosPelicula { get; set; } = new List<GeneroPelicula>();

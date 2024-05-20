@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace BlazorPeliculas.Server.Controllers
 {
@@ -29,6 +30,17 @@ namespace BlazorPeliculas.Server.Controllers
             var queryable = context.Users.AsQueryable();
             await HttpContext.InsertarParametrosPaginacionEnRespuesta(queryable, paginacion.CantidadRegistros);
             return await queryable.Paginar(paginacion).Select(x => new UsuarioDTO { Id = x.Id, Email = x.Email }).ToListAsync();
+        }
+
+        [HttpGet("currentUserId")]
+        public async Task<ActionResult<string>> GetCurrentUserId()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return user.Id;
         }
 
         [HttpGet("roles")]

@@ -66,7 +66,7 @@
 	[Parameter]
 	[SupplyParameterFromQuery]
 	public bool masVotadas { get; set; } = false;
-	private List<Pelicula>? Peliculas;
+	private List<PeliculaGrupoDTO>? Peliculas;
 	Dictionary<string, string> queryStringDic = new Dictionary<string, string>();
 	[Parameter]
 	[SupplyParameterFromQuery(Name = "pagina")]
@@ -116,8 +116,23 @@
 	private async Task RealizarBusqueda(string queryStrings)
 	{
 		var respuestaHTTP = await repositorio.Get<List<Pelicula>>("api/peliculas/filtrar?" + queryStrings);
-		paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
-		Peliculas = respuestaHTTP.Response;
+		// paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
+		try
+		{
+			paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
+		}
+		catch (InvalidOperationException)
+		{
+			// Manejar la excepción aquí, por ejemplo, estableciendo un valor predeterminado para paginasTotales
+			paginasTotales = 1; // o cualquier valor predeterminado que tenga sentido en tu caso
+		}
+		var respuesta = respuestaHTTP.Response;
+		Peliculas = respuesta.Select(p => new PeliculaGrupoDTO
+			{
+				Id = p.Id,
+				Titulo = p.Titulo,
+				Poster = p.Poster
+			}).ToList();
 	}
 
 	private string GenerarQueryString()

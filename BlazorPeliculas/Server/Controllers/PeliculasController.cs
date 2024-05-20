@@ -35,15 +35,27 @@ namespace BlazorPeliculas.Server.Controllers
         {
             var limite = 6;
 
-            var peliculasEnCartelera = await context.Peliculas.Where(pelicula => pelicula.EnCartelera).Take(limite)
+            var respuestaEnCartelera = await context.Peliculas.Where(pelicula => pelicula.EnCartelera).Take(limite)
                 .OrderByDescending(pelicula => pelicula.FechaLanzamiento).ToListAsync();
+			var peliculasEnCartelera = respuestaEnCartelera.Select(p => new PeliculaGrupoDTO
+			{
+				Id = p.Id,
+				Titulo = p.Titulo,
+				Poster = p.Poster
+			}).ToList();
 
-            var fechaActual = DateTime.Today;
+			var fechaActual = DateTime.Today;
 
-            var proximosEstrenos = await context.Peliculas.Where(pelicula => pelicula.FechaLanzamiento > fechaActual).Take(limite)
+            var respuestaProximosEstrenos = await context.Peliculas.Where(pelicula => pelicula.FechaLanzamiento > fechaActual).Take(limite)
                 .OrderBy(pelicula => pelicula.FechaLanzamiento).ToListAsync();
+			var proximosEstrenos = respuestaEnCartelera.Select(p => new PeliculaGrupoDTO
+			{
+				Id = p.Id,
+				Titulo = p.Titulo,
+				Poster = p.Poster
+			}).ToList();
 
-            var resultado = new HomePageDTO
+			var resultado = new HomePageDTO
             {
                 PeliculasEnCartelera = peliculasEnCartelera,
                 ProximosEstrenos = proximosEstrenos,

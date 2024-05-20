@@ -1,0 +1,102 @@
+﻿@page "/perfil"
+
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject IRepository repositorio
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+<h3>Mis peliculas favoritas</h3>
+@if (peliculasFavoritas != null)
+{
+    <ListadoPeliculas Peliculas="@peliculasFavoritas" HasOverflow=true />
+}
+else
+{
+    <p>@mensajeError</p>
+}
+
+<h3>Mis peliculas vistas</h3>
+@if (peliculasVistas != null)
+{
+    <ListadoPeliculas Peliculas="@peliculasVistas" HasOverflow=true />
+}
+else
+{
+    <p>@mensajeError</p>
+}
+
+<h3>Mis peliculas por ver</h3>
+@if (peliculasPorVer != null)
+{
+    <ListadoPeliculas Peliculas="@peliculasPorVer" HasOverflow=true />
+}
+else
+{
+    <p>@mensajeError</p>
+}
+
+<h3>Según los géneros de tus películas favoritas, te recomendamos:</h3>
+@if (peliculasRecomendadas != null)
+{
+    <ListadoPeliculas Peliculas="@peliculasRecomendadas" HasOverflow=true />
+}
+else
+{
+    <p>@mensajeError</p>
+}
+
+<h3>Usuarios con tus mismos interes recomiendan:</h3>
+@if (peliculasUsuariosRecomiendan != null)
+{
+    <ListadoPeliculas Peliculas="@peliculasUsuariosRecomiendan" HasOverflow=true />
+}
+else
+{
+    <p>@mensajeError</p>
+}
+
+@code {
+    private List<PeliculaGrupoDTO> peliculasFavoritas = new List<PeliculaGrupoDTO>();
+    private List<PeliculaGrupoDTO> peliculasVistas = new List<PeliculaGrupoDTO>();
+    private List<PeliculaGrupoDTO> peliculasPorVer = new List<PeliculaGrupoDTO>();
+    private List<PeliculaGrupoDTO> peliculasRecomendadas = new List<PeliculaGrupoDTO>();
+    private List<PeliculaGrupoDTO> peliculasUsuariosRecomiendan = new List<PeliculaGrupoDTO>();
+    private string mensajeError = "Hubo un error al obtener las películas.";
+    private string email;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var respuestaFavoritas = await repositorio.Get<List<PeliculaGrupoDTO>>("api/listaspeliculas/favoritas");
+        if (!respuestaFavoritas.Error)
+        {
+            peliculasFavoritas = respuestaFavoritas.Response;
+        }
+
+        var respuestaVistas = await repositorio.Get<List<PeliculaGrupoDTO>>("api/listaspeliculas/vistas");
+        if (!respuestaVistas.Error)
+        {
+            peliculasVistas = respuestaVistas.Response;
+        }
+
+        var respuestaPorVer = await repositorio.Get<List<PeliculaGrupoDTO>>("api/listaspeliculas/porver");
+        if (!respuestaPorVer.Error)
+        {
+            peliculasPorVer = respuestaPorVer.Response;
+        }
+
+        var respuestaRecomendaciones = await repositorio.Get<List<PeliculaGrupoDTO>>($"api/recomendaciones/generos");
+        if (!respuestaRecomendaciones.Error && respuestaFavoritas.Response != null)
+        {
+            peliculasRecomendadas = respuestaRecomendaciones.Response;
+        }
+
+        var respuestaUsuariosRecomiendan = await repositorio.Get<List<PeliculaGrupoDTO>>($"api/recomendaciones/gruposusuarios");
+        if (!respuestaUsuariosRecomiendan.Error)
+        {
+            peliculasUsuariosRecomiendan = respuestaUsuariosRecomiendan.Response;
+        }
+    }
+}

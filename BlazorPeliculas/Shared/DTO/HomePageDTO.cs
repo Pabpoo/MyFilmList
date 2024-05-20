@@ -10,7 +10,7 @@ namespace BlazorPeliculas.Shared.DTO
 {
 	public class HomePageDTO
 	{
-		public List<Pelicula>? PeliculasEnCartelera { get; set; }
-        public List<Pelicula>? ProximosEstrenos { get; set; }
+		public List<PeliculaGrupoDTO>? PeliculasEnCartelera { get; set; }
+        public List<PeliculaGrupoDTO>? ProximosEstrenos { get; set; }
     }
 }

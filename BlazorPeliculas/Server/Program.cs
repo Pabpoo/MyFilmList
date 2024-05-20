@@ -17,15 +17,14 @@ namespace BlazorPeliculas
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllersWithViews()
                 // añadimos esta linea para corregir un error que daría en PeliculasController en el endpoint de Task<ActionResult<PeliculaVisualizarDTO>>
-                .AddJsonOptions(opciones => opciones.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+                .AddJsonOptions(opciones => opciones.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+                .AddJsonOptions(opciones => opciones.JsonSerializerOptions.WriteIndented = true);
             builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("BlazorPeliculas");
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -38,21 +37,24 @@ namespace BlazorPeliculas
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(options =>
                 {
-                    // Para validar emisores, no lo necesitamos
-                    ValidateIssuer = false,
-                    // Para validar audiencia(receptores), tampoco lo necesitamos
-                    ValidateAudience = false,
-                    // Validamos el tiempo de vida del token
-                    ValidateLifetime = true,
-                    // Valida la llave de firma del emisor, su clave secreta, esto implica que nadie pueda modificar el json wbe token
-                    // y alterar los claims para que nuestro sistema de por válido algo que no queremos
-                    ValidateIssuerSigningKey = true,
-                    // configuramos la llave secreta del token
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(builder.Configuration["jwtkey"])),
-                    ClockSkew = TimeSpan.Zero
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // Para validar emisores, no lo necesitamos
+                        ValidateIssuer = false,
+                        // Para validar audiencia(receptores), tampoco lo necesitamos
+                        ValidateAudience = false,
+                        // Validamos el tiempo de vida del token
+                        ValidateLifetime = true,
+                        // Valida la llave de firma del emisor, su clave secreta, esto implica que nadie pueda modificar el json wbe token
+                        // y alterar los claims para que nuestro sistema de por válido algo que no queremos
+                        ValidateIssuerSigningKey = true,
+                        // configuramos la llave secreta del token
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["jwtkey"])),
+                        ClockSkew = TimeSpan.Zero
+                    };
                 });
 
             var app = builder.Build();
@@ -88,14 +90,14 @@ namespace BlazorPeliculas
 
             app.Run();
         }
-        private static void CreateDbIfNotExists(IHost host)
+        private static async void CreateDbIfNotExists(IHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    DbInitializer.Initialize(services);
+                   await DbInitializer.Initialize(services);
                 }
                 catch (Exception ex)
                 {

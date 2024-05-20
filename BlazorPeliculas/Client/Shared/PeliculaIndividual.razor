@@ -26,7 +26,7 @@
         <a href="@urlPelicula" class="text-decoration-none">@Pelicula.Titulo</a>
     </p>
     
-    <AuthorizeView Roles="Admin">
+    <AuthorizeView Roles="admin">
         <div>
             <a class="btn btn-info" href="peliculas/editar/@Pelicula.Id">Editar</a>
             <button type="button" class="btn btn-danger"
@@ -40,13 +40,13 @@
 
     [Parameter]
     [EditorRequired]
-    public Pelicula Pelicula { get; set; } = null!;
+    public PeliculaGrupoDTO Pelicula { get; set; } = null!;
 
     [Parameter]
     public bool MostarBotones { get; set; } = false;
 
     [Parameter]
-    public EventCallback<Pelicula> EliminarPelicula { get; set; }
+    public EventCallback<PeliculaGrupoDTO> EliminarPelicula { get; set; }
 
     private string urlPelicula = string.Empty;
 

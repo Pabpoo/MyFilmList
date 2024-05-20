@@ -2,12 +2,7 @@
 @inject IRepository repositorio
 @inject SweetAlertService swal
 
-@* <input type="checkbox" @bind="MostrarBotones" /> *@
-@* <span>
-    Mostrar botones
-</span> *@
-
-<div style="display:flex; flex-wrap:wrap; align-items:center;">
+<div style="display:flex; flex-wrap:wrap; align-items:center; @(HasOverflow ? "overflow-x: auto;" : "")">
     <ListadoGenerico Listado="Peliculas">
         <Data Context="pelicula">
             @* Con key le decimos que use el id de la pelicual para que diferencie las peliculas *@
@@ -19,42 +14,12 @@
 </div>
 
 @code {
-
     [Parameter]
-    public List<Pelicula>? Peliculas { get; set; }
+    public List<PeliculaGrupoDTO>? Peliculas { get; set; }
+    [Parameter]
+    public bool HasOverflow { get; set; } = false;
 
-    // public void LimpiarPeliculas()
-    // {
-    //     if(Peliculas is not null)
-    //     {
-    //         Peliculas.Clear();
-    //     }
-    // }
-
-    // protected override void OnInitialized()
-    // {
-    //     Console.WriteLine($"OnInitialized - Cantidad películas {Peliculas!.Count}");
-    // }
-    // // Solo se ejecuta una vez a menos que cambiemos los parámetros desdde fuera del componente
-    // protected override void OnParametersSet()
-    // {
-    //     Console.WriteLine($"On parameterSet  - Cantidad películas {Peliculas!.Count}");
-    // }
-    // // Se ejecuta cada vez hay algún cambio en la app, el parámetro firstRender pertenece a ese método y se puede invocar
-    // protected override void OnAfterRender(bool firstRender)
-    // {
-    //     Console.WriteLine("OnAfterRender: Primera vez: " + firstRender);
-    // }
-    // // ShouldRender permite que se renderice o no algún cambio según sera true or false
-    // protected override bool ShouldRender()
-    // {
-    //     Console.WriteLine("ShouldRender");
-    //     return true;
-    // }
-
-    // bool MostrarBotones = true;
-
-    private async Task EliminarPelicula(Pelicula pelicula)
+    private async Task EliminarPelicula(PeliculaGrupoDTO pelicula)
     {
         // Podemos crear una clase para el código javascript e ir llamándola
         var confirmado = await js.Confirm($"¿Desea borrar la película {pelicula.Titulo}?");
