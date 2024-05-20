@@ -5,10 +5,18 @@
 .top-row {
     height: 3.5rem;
     background-color: rgba(0,0,0,0.4);
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .navbar-brand {
-    font-size: 1.1rem;
+    font-size: larger;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+#main-icon {
+    height: 57px;
 }
 
 .oi {
@@ -16,6 +24,10 @@
     font-size: 1.1rem;
     vertical-align: text-top;
     top: -2px;
+}
+
+.bigger-icon {
+    font-size:x-large;
 }
 
 .nav-item {
@@ -42,7 +54,7 @@
 
 .nav-item ::deep a.active {
     background-color: rgba(255,255,255,0.25);
-    color: white;
+    color: #280a2e;
 }
 
 .nav-item ::deep a:hover {

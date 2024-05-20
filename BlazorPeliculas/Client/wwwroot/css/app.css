@@ -161,3 +161,30 @@ code {
 .checked {
     color:orange;
 }
+
+#btn-agregar-favorita{
+    font-size:1.1em;
+}
+
+#btn-agregar-por-ver{
+    font-size:1.1em;
+}
+
+#btn-agregar-vistas{
+    font-size:1.1em;
+}
+
+#btn-agregar-favorita:hover::before {
+    content: "\f415";
+    color: pink;
+}
+
+#btn-agregar-vistas:hover::before {
+    content: "\f33e";
+    color: blue;
+}
+
+#btn-agregar-por-ver:hover::before {
+    content: "\f291";
+    color: gray;
+}

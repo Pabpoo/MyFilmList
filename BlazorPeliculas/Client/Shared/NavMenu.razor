@@ -1,6 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-1 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorPeliculas</a>
+        <a class="navbar-brand" href=""><img id="main-icon" class="me-3" src="img/MyFilmList_logo_transparent.png">MyFilmList</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -12,42 +12,44 @@
         <div class="nav-item px-3">
             @* NavLink Sirve para resaltar en el nav link la pagina en la que nos encontramos *@
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+                <span class="bi bi-house-door me-2 bigger-icon" aria-hidden="true"></span> Home
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="peliculas/buscar">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Filtrar películas
+                <span class="bi bi-list me-2 bigger-icon" aria-hidden="true"></span> Filtrar películas
             </NavLink>
         </div>
 
+        <AuthorizeView>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="perfil">
+                    <span class="bi bi-person me-2 bigger-icon" aria-hidden="true"></span> Mi perfil
+                </NavLink>
+            </div>
+        </AuthorizeView>
 
 
         @* Esto oculta los links y no los muestra, pero no protege los componentes de que cualquiera acceda a traves de la url añadiendo por ejemplo /generos *@
         <AuthorizeView Roles="admin">
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="generos">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Generos
+                <NavLink class="nav-link" href="peliculas/crear">
+                    <span class="bi bi-film me-2 bigger-icon" aria-hidden="true"></span> Crear Peliculas
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="actores">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Actores
+                    <span class="bi bi-person-lines-fill me-2 bigger-icon" aria-hidden="true"></span> Manejar Actores
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="peliculas/crear">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Crear Peliculas
+                <NavLink class="nav-link" href="generos">
+                    <span class="bi bi-card-list me-2 bigger-icon" aria-hidden="true"></span> Manejar Generos
                 </NavLink>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="usuarios">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Usuarios
+                    <span class="bi bi-person-fill-gear me-2 bigger-icon" aria-hidden="true"></span> Manejar rol Usuarios
                 </NavLink>
             </div>
         </AuthorizeView>
