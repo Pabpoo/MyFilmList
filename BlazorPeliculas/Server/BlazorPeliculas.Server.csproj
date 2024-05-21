@@ -4,7 +4,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>6b9eba1c-263a-411b-9853-2cfa9b7c2764</UserSecretsId>
+	<BlazorCacheBootResources>false</BlazorCacheBootResources>
+	<UserSecretsId>6b9eba1c-263a-411b-9853-2cfa9b7c2764</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

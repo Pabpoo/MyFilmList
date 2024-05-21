@@ -7,6 +7,7 @@ namespace BlazorPeliculas.Shared.Entity
 	{
 
         public int Id { get; set; }
+        public int APIId { get; set; }
 		[Required]
         public string? Titulo { get; set; }
         public string? Resumen { get; set; }

@@ -29,7 +29,7 @@
 				@foreach (var item in Actores)
 				{
 					<tr>
-						<td>
+						<td style="width:160px;">
 							<a href="actores/editar/@item.Id" class="btn btn-success">Editar</a>
 							<button class="btn btn-danger" @onclick=@(() => Borrar(item))>Borrar</button>
 						</td>

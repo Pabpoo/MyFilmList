@@ -24,25 +24,29 @@ else
         | @modelo.Pelicula.FechaLanzamiento.Value.ToString("dd MMM yyyy")
         | Promedio: @modelo.PromedioVotos.ToString("0.#")/5
         | Tu voto: <Rating MaximaPuntuacion="5" PuntuacionSeleccionada="modelo.VotoUsuario" OnRating="OnRating" Disabled="!isAuthenticated"></Rating>
+        <div style="@(!isAuthenticated ? "display:none;" : "display:inline;")">
+            <i id="btn-agregar-favorita" role="button" class="ms-2 me-1 bi bi-heart@(esFavorita ? "-fill" : "")" style="@(esFavorita ? "color: deeppink;" : "")"
+                @onclick="AgregarOQuitarFavoritas" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(esFavorita ? "Eliminar de" : "Agregar a") 'Favoritas'">
+            </i>
 
-        <i id="btn-agregar-favorita" role="button" class="ms-2 me-1 bi bi-heart@(esFavorita ? "-fill" : "")" style="@(esFavorita ? "color: deeppink;" : "")"
-            @onclick="AgregarOQuitarFavoritas" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(esFavorita ? "Eliminar de" : "Agregar a") 'Favoritas'">
-        </i>
-
-        <i id="btn-agregar-vistas" role="button" class="ms-1 me-2 bi bi-eye@(vista ? "-fill" : "")" style="@(vista ? "color: darkblue;" : "")"
+            <i id="btn-agregar-vistas" role="button" class="ms-1 me-2 bi bi-eye@(vista ? "-fill" : "")" style="@(vista ? "color: darkblue;" : "")"
                 @onclick="AgregarOQuitarVistas" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(vista ? "Eliminar de" : "Agregar a") 'Vistas'">
-        </i>
+            </i>
 
-        <i id="btn-agregar-por-ver" role="button" class="mx-1 bi bi-clock@(porVer ? "-fill" : "")" style="@(porVer ? "color: black;" : "")"
-            @onclick="AgregarOQuitarPorVer" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(porVer ? "Eliminar de" : "Agregar a") 'Por Ver'">
-        </i>
+            <i id="btn-agregar-por-ver" role="button" class="mx-1 bi bi-clock@(porVer ? "-fill" : "")" style="@(porVer ? "color: black;" : "")"
+                @onclick="AgregarOQuitarPorVer" data-bs-trigger="hover" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@(porVer ? "Eliminar de" : "Agregar a") 'Por Ver'">
+            </i>
+        </div>
     </span>
 
     <div class="d-flex mt-2">
         <span style="display: inline-block;" class="me-2">
             <img src="@modelo.Pelicula.Poster" style="width: 225px; height: 315px" />
         </span>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/@modelo.Pelicula.Trailer" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        @if (modelo.Pelicula.Trailer != "")
+        {
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/@modelo.Pelicula.Trailer" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>   
+        }
     </div>
 
     <div class="mt-2">
@@ -103,36 +107,9 @@ else
         {
             modelo = respuestaHTTP.Response;
         }
-
-        if (añadidaAFavorita.Error)
-        {
-            var mensajeError = await añadidaAFavorita.ObtenerMensajeError();
-            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-        }
-        else
-        {
-            esFavorita = añadidaAFavorita.Response;
-        }
-
-        if (añadidaAPorVer.Error)
-        {
-            var mensajeError = await añadidaAPorVer.ObtenerMensajeError();
-            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-        }
-        else
-        {
-            porVer = añadidaAPorVer.Response;
-        }
-
-        if (añadidaAVista.Error)
-        {
-            var mensajeError = await añadidaAVista.ObtenerMensajeError();
-            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-        }
-        else
-        {
-            vista = añadidaAVista.Response;
-        }
+        esFavorita = añadidaAFavorita.Response;
+        porVer = añadidaAPorVer.Response;
+        vista = añadidaAVista.Response;
     }
 
     private async Task OnRating(int votoSeleccionado)

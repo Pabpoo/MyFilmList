@@ -10,7 +10,6 @@ namespace BlazorPeliculas.Server.Controllers
 {
     [ApiController]
     [Route("api/listaspeliculas")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ListasPeliculasController : ControllerBase
     {
         private readonly ApplicationDbContext context;

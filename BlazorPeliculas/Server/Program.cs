@@ -24,7 +24,16 @@ namespace BlazorPeliculas
             builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("BlazorPeliculas");
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddDbContext<ApplicationDbContext>(
+                options =>
+                {
+                    options.UseSqlServer(connectionString);
+                }, ServiceLifetime.Transient);
+            builder.Services.AddDbContextFactory<ApplicationDbContext>(
+                options =>
+                {
+                options.UseSqlServer(connectionString);
+                }, ServiceLifetime.Transient);
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

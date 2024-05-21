@@ -6,6 +6,8 @@ namespace BlazorPeliculas.Shared.Entity
 	public class Actor
 	{
         public int Id { get; set; }
+        public int APIId { get; set; }
+
         [Required]
 		public string Nombre { get; set; }
 		public string? Biografia { get; set; }
