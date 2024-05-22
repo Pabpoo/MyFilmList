@@ -116,7 +116,6 @@
 	private async Task RealizarBusqueda(string queryStrings)
 	{
 		var respuestaHTTP = await repositorio.Get<List<Pelicula>>("api/peliculas/filtrar?" + queryStrings);
-		// paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
 		try
 		{
 			paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());

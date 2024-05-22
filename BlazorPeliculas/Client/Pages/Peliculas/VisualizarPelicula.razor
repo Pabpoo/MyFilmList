@@ -18,7 +18,7 @@ else
 
     foreach(var genero in modelo.Generos)
     {
-        <a class="me-2 badge bg-primary rounded-pill text-decoration-none" href="peliculas/buscar?@genero.Id=@genero.Id">@genero.Nombre</a>
+        <a class="me-2 badge bg-primary rounded-pill text-decoration-none" href="peliculas/buscar?generoid=@genero.Id">@genero.Nombre</a>
     }
     <span>
         | @modelo.Pelicula.FechaLanzamiento.Value.ToString("dd MMM yyyy")
@@ -51,7 +51,7 @@ else
 
     <div class="mt-2">
         <h3>Resumen</h3>
-        <div>
+        <div class="resumen-texto">
             <MostrarMarkdown ContenidoMarkdown="@modelo.Pelicula.Resumen"></MostrarMarkdown>
         </div>
     </div>
@@ -62,10 +62,12 @@ else
             @foreach (var actor in modelo.Actor)
             {
                 <div class="mb-2">
-                    <img style="width:50px;" src="@actor.Foto" />
-                    <span style="display:inline-block; width:200px;">@actor.Nombre</span>
-                    <span style="display:inline-block; width:45px;">...</span>
-                    <span>@actor.Personaje</span>
+                    <a href="/actores/detalles/@actor.Id" class="text-decoration-none text-dark">
+                        <img style="width:50px;" src="@actor.Foto" />
+                        <span class="d-inline-block fw-bolder link-hover" style="width:200px;">@actor.Nombre</span>
+                    </a>
+                    <span class="d-inline-block me-3">Interpretando a:</span>
+                    <span class="fw-bold">@actor.Personaje</span>
                 </div>               
             }
         </div>

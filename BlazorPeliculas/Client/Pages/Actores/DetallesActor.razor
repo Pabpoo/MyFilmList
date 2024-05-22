@@ -1,0 +1,74 @@
+﻿@page "/actores/detalles/{ActorId:int}"
+@inject IRepository repositorio
+@inject SweetAlertService swal
+
+@if (actor is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <h2>@actor.Nombre (@actor.FechaNacimiento.Value.ToString("yyyy"))</h2>
+
+    <div class="d-flex mt-2">
+        <span style="display: inline-block;" class="me-2">
+            <img src="@actor.Foto" style="width: 225px; height: 315px" />
+        </span>
+    </div>
+
+    <div class="mt-2">
+        <h3>Biografía</h3>
+        <div class="resumen-texto">
+            <p>@actor.Biografia</p>
+        </div>
+    </div>
+
+    @if (actorPeliculas != null && actorPeliculas.Any())
+    {
+        <div class="mt-2">
+            <h3>Películas en las que aparece @actor.Nombre</h3>
+            <div class="d-flex flex-wrap">
+                @foreach (var actorPelicula in actorPeliculas)
+                {
+                    if (actorPelicula != null)
+                    {
+                        <PeliculaIndividual Pelicula="@actorPelicula" />
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int ActorId { get; set; }
+    private Actor? actor;
+    private List<PeliculaGrupoDTO>? actorPeliculas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var respuestaHTTP = await repositorio.Get<Actor>($"api/actores/{ActorId}");
+
+        if (respuestaHTTP.Error)
+        {
+            var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            actor = respuestaHTTP.Response;
+        }
+
+        var respuestaPeliculas = await repositorio.Get<List<PeliculaGrupoDTO>>($"api/actores/peliculas/{ActorId}");
+
+        if (respuestaPeliculas.Error)
+        {
+            var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            actorPeliculas = respuestaPeliculas.Response;
+        }
+    }
+}

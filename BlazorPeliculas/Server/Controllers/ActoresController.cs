@@ -58,11 +58,28 @@ namespace BlazorPeliculas.Server.Controllers
 				return new List<Actor>();
 			}
 			
-			// El take se trae solo los primeros x de la lista
-            return await context.Actores.Where(x => x.Nombre.ToLower().Contains(textoBusqueda.ToLower())).Take(10).ToListAsync();
+            return await context.Actores.Where(x => x.Nombre.ToLower().Contains(textoBusqueda.ToLower())).ToListAsync();
 		}
 
-		[HttpPost]
+        [HttpGet("peliculas/{id}")]
+        public async Task<ActionResult<List<PeliculaGrupoDTO>>> GetPeliculasPorActor(int id)
+        {
+            var peliculas = await context.PeliculasActores
+				.Include(pa => pa.Pelicula)
+                .Where(pa => pa.ActorId == id)
+				.Select(pa => pa.Pelicula)
+				.Select(p => new PeliculaGrupoDTO
+				{
+					Id = p.Id,
+					Titulo = p.Titulo,
+					Poster = p.Poster
+				})
+				.ToListAsync();
+
+            return peliculas;
+        }
+
+        [HttpPost]
 		public async Task<ActionResult<int>> Post(Actor actor)
 		{
             if (actor.FechaNacimiento > DateTime.Today)

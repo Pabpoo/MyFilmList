@@ -5,11 +5,13 @@
 @inject SweetAlertService swal
 @attribute [Authorize(Roles = "admin")]
 
-<h3>IndiceActores</h3>
+<h3>Indice Actores</h3>
 
-<div class="mb-3">
-	<a href="actores/crear" class="btn btn-info">Crear actor</a>
-</div>
+
+
+<input type="text" @bind="textoBusqueda" placeholder="Buscar por nombre..." />
+<button type="button" class="btn btn-primary" @onclick="Buscar">Filtrar</button>
+<button type="button" class="btn btn-danger" @onclick="Limpiar">Limpiar</button>
 
 <Paginacion PaginaActual="paginaActual"
 	PaginasTotales="paginasTotales"
@@ -21,8 +23,12 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th></th>
-					<th>Nombre</th>
+					<th>
+						<div class="d-flex justify-content-center align-items-center h-100">
+							<a href="actores/crear" class="btn btn-info">Crear actor</a>
+						</div>
+					</th>
+					<th>Actor/Actriz</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,6 +40,7 @@
 							<button class="btn btn-danger" @onclick=@(() => Borrar(item))>Borrar</button>
 						</td>
 						<td>
+							<img src="@item.Foto" alt="@item.Nombre" style="width:30px; height:40px;">
 							@item.Nombre
 						</td>
 					</tr>
@@ -47,7 +54,7 @@
 	public List<Actor> Actores { get; set; }
 	private int paginaActual = 1;
 	private int paginasTotales;
-
+	private string textoBusqueda;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -65,6 +72,25 @@
 		var respuestaHTTP = await repositorio.Get<List<Actor>>($"api/actores?pagina={pagina}");
 		Actores = respuestaHTTP.Response;
 		paginasTotales = int.Parse(respuestaHTTP.HttpResponseMessage.Headers.GetValues("totalPaginas").FirstOrDefault());
+	}
+
+	private async Task Buscar()
+	{
+		if (string.IsNullOrEmpty(textoBusqueda))
+		{
+			await Cargar();
+		}
+		else
+		{
+			var respuestaHTTP = await repositorio.Get<List<Actor>>($"api/actores/buscar/{textoBusqueda}");
+			Actores = respuestaHTTP.Response;
+		}
+	}
+
+	private async Task Limpiar()
+	{
+		textoBusqueda = string.Empty;
+		await Buscar();
 	}
 
 	private async Task Borrar(Actor actor)

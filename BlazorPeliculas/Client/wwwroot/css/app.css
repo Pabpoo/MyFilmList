@@ -188,3 +188,12 @@ code {
     content: "\f291";
     color: gray;
 }
+
+.link-hover:hover {
+    color: #721488;
+}
+
+.resumen-texto {
+    width: 50%;
+    text-align: justify;
+}
