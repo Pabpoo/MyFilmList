@@ -168,6 +168,8 @@ namespace BlazorPeliculas.Server.Controllers
             }
 
             usuario.Favoritas.Add(pelicula);
+            //En las relaciones many to many es necesario añadir esta linea para que entity framework sepa que se ha modificado la entidad
+            context.Entry(usuario).State = EntityState.Modified;
             await context.SaveChangesAsync();
 
             return NoContent();
@@ -190,6 +192,7 @@ namespace BlazorPeliculas.Server.Controllers
             }
 
             usuario.PorVer.Add(pelicula);
+            context.Entry(usuario).State = EntityState.Modified;
             await context.SaveChangesAsync();
 
             return NoContent();
@@ -213,6 +216,7 @@ namespace BlazorPeliculas.Server.Controllers
             }
 
             usuario.Vistas.Add(pelicula);
+            context.Entry(usuario).State = EntityState.Modified;
             await context.SaveChangesAsync();
 
             return NoContent();

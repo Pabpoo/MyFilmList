@@ -58,7 +58,7 @@ namespace BlazorPeliculas.Server.Controllers
                 .ToListAsync();
 
             // 5. Excluye las películas que el usuario ya ha marcado como favoritas.
-            recomendaciones = recomendaciones.Except(peliculasFavoritas).ToList();
+            recomendaciones = recomendaciones.Except(peliculasFavoritas).Take(9).ToList();
 
             // 6. Devuelve estas películas como recomendaciones.
             var respuesta = recomendaciones.Select(p => new PeliculaGrupoDTO
@@ -124,7 +124,7 @@ namespace BlazorPeliculas.Server.Controllers
                 .ToList();
 
             // 6. Excluye las películas que el usuario ya ha marcado como favoritas.
-            recomendaciones = recomendaciones.Except(peliculasFavoritas).ToList();
+            recomendaciones = recomendaciones.Except(peliculasFavoritas).Take(9).ToList();
 
             var respuesta = recomendaciones.Select(p => new PeliculaGrupoDTO
             {

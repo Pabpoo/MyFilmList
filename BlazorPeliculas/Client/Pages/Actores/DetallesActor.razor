@@ -47,7 +47,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var respuestaHTTP = await repositorio.Get<Actor>($"api/actores/{ActorId}");
+        var respuestaHTTP = await repositorio.Get<Actor>($"api/actores/detalles/{ActorId}");
 
         if (respuestaHTTP.Error)
         {
@@ -59,7 +59,7 @@ else
             actor = respuestaHTTP.Response;
         }
 
-        var respuestaPeliculas = await repositorio.Get<List<PeliculaGrupoDTO>>($"api/actores/peliculas/{ActorId}");
+        var respuestaPeliculas = await repositorio.Get<List<PeliculaGrupoDTO>>($"api/actores/detalles/peliculas/{ActorId}");
 
         if (respuestaPeliculas.Error)
         {

@@ -48,7 +48,7 @@ namespace BlazorPeliculas.Server.Controllers
 
             var respuestaProximosEstrenos = await context.Peliculas.Where(pelicula => pelicula.FechaLanzamiento > fechaActual).Take(limite)
                 .OrderBy(pelicula => pelicula.FechaLanzamiento).ToListAsync();
-			var proximosEstrenos = respuestaEnCartelera.Select(p => new PeliculaGrupoDTO
+			var proximosEstrenos = respuestaProximosEstrenos.Select(p => new PeliculaGrupoDTO
 			{
 				Id = p.Id,
 				Titulo = p.Titulo,
@@ -126,6 +126,7 @@ namespace BlazorPeliculas.Server.Controllers
 
         [HttpGet("filtrar")]
         [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<Pelicula>>> Get([FromQuery] ParametrosBusquedaPeliculasDTO modelo)
         {
             //Ejecución diferida para crear un queryable
