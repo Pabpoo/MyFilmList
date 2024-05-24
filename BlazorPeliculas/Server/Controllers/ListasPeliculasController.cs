@@ -225,21 +225,22 @@ namespace BlazorPeliculas.Server.Controllers
         [HttpDelete("eliminardefavoritas/{id:int}")]
         public async Task<ActionResult> EliminarDeFavoritas(int id)
         {
-            var usuario = await userManager.Users.Include(x => x.Favoritas).SingleAsync(x => x.NormalizedEmail == HttpContext.User.Identity.Name);
+            var usuario = await userManager.Users.Include(x => x.Favoritas).FirstOrDefaultAsync(x => x.NormalizedEmail == HttpContext.User.Identity.Name);
 
             if (usuario is null)
             {
                 return BadRequest("Usuario no encontrado");
             }
 
-            var pelicula = await context.Peliculas.FirstOrDefaultAsync(x => x.Id == id);
+            var pelicula = usuario.Favoritas.FirstOrDefault(p => p.Id == id);
 
             if (pelicula is null)
             {
                 return BadRequest("Película no encontrada");
             }
 
-            usuario.Favoritas.Remove(pelicula);
+            //En las relaciones many to many es necesario añadir esta linea para que entity framework sepa que se ha modificado la entidad
+            await context.Database.ExecuteSqlAsync($"DELETE FROM [dbo].[ApplicationUserPelicula] WHERE FavoritasId={pelicula.Id} and ApplicationUserId={usuario.Id}");
             await context.SaveChangesAsync();
 
             return NoContent();
@@ -255,14 +256,14 @@ namespace BlazorPeliculas.Server.Controllers
                 return BadRequest("Usuario no encontrado");
             }
 
-            var pelicula = await context.Peliculas.FirstOrDefaultAsync(x => x.Id == id);
+            var pelicula = usuario.PorVer.FirstOrDefault(p => p.Id == id);
 
             if (pelicula is null)
             {
                 return BadRequest("Película no encontrada");
             }
 
-            usuario.PorVer.Remove(pelicula);
+            await context.Database.ExecuteSqlAsync($"DELETE FROM [dbo].[ApplicationUserPelicula1] WHERE PorVerId={pelicula.Id} and ApplicationUser1Id={usuario.Id}");
             await context.SaveChangesAsync();
 
             return NoContent();
@@ -278,14 +279,14 @@ namespace BlazorPeliculas.Server.Controllers
                 return BadRequest("Usuario no encontrado");
             }
 
-            var pelicula = await context.Peliculas.FirstOrDefaultAsync(x => x.Id == id);
+            var pelicula = usuario.Vistas.FirstOrDefault(p => p.Id == id);
 
             if (pelicula is null)
             {
                 return BadRequest("Película no encontrada");
             }
 
-            usuario.Vistas.Remove(pelicula);
+            await context.Database.ExecuteSqlAsync($"DELETE FROM [dbo].[ApplicationUserPelicula2] WHERE VistasId={pelicula.Id} and ApplicationUser2Id={usuario.Id}");
             await context.SaveChangesAsync();
 
             return NoContent();

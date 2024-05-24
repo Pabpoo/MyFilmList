@@ -6,7 +6,6 @@ namespace BlazorPeliculas.Client.Repositories
 	{
 		Task<HttpResponseWraper<object>> Delete(string url);
 		Task<HttpResponseWraper<T>> Get<T>(string url);
-		List<Pelicula> ObtenerPeliculas();
 		Task<HttpResponseWraper<object>> Post<T>(string url, T enviar);
         Task<HttpResponseWraper<TResponse>> Post<T, TResponse>(string url, T enviar);
         Task<HttpResponseWraper<object>> Put<T>(string url, T enviar);

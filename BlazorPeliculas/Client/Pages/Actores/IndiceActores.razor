@@ -1,5 +1,6 @@
 ﻿@page "/actores"
 @using Microsoft.AspNetCore.Authorization
+@inject IJSRuntime js
 @inject IRepository repositorio
 @inject NavigationManager navigationManager
 @inject SweetAlertService swal
@@ -95,23 +96,28 @@
 
 	private async Task Borrar(Actor actor)
 	{
-		var responseHTTP = await repositorio.Delete($"api/actores/{actor.Id}");
+		var confirmado = await js.Confirm($"¿Desea borrar al actor {actor.Nombre}?");
 
-		if (responseHTTP.Error)
+		if (confirmado)
 		{
-			if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+			var responseHTTP = await repositorio.Delete($"api/actores/{actor.Id}");
+
+			if (responseHTTP.Error)
 			{
-				navigationManager.NavigateTo("actores");
+				if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+				{
+					navigationManager.NavigateTo("actores");
+				}
+				else
+				{
+					var mensajeError = await responseHTTP.ObtenerMensajeError();
+					await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+				}
 			}
 			else
 			{
-				var mensajeError = await responseHTTP.ObtenerMensajeError();
-				await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+				await Cargar();
 			}
-		}
-		else
-		{
-			await Cargar();
 		}
 	}
 }

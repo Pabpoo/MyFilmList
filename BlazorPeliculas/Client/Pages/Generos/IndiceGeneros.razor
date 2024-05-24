@@ -1,5 +1,6 @@
 ﻿@page "/generos"
 @using Microsoft.AspNetCore.Authorization
+@inject IJSRuntime js
 @inject IRepository repositorio
 @inject NavigationManager navigationManager
 @inject SweetAlertService swal
@@ -55,23 +56,28 @@
 
 	private async Task Borrar(Genero genero)
 	{
-		var responseHTTP = await repositorio.Delete($"api/generos/{genero.Id}");
+		var confirmado = await js.Confirm($"¿Desea borrar el género {genero.Nombre}?");
 
-		if (responseHTTP.Error)
+		if (confirmado)
 		{
-			if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+			var responseHTTP = await repositorio.Delete($"api/generos/{genero.Id}");
+
+			if (responseHTTP.Error)
 			{
-				navigationManager.NavigateTo("/");
+				if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+				{
+					navigationManager.NavigateTo("/");
+				}
+				else
+				{
+					var mensajeError = await responseHTTP.ObtenerMensajeError();
+					await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+				}
 			}
 			else
 			{
-				var mensajeError = await responseHTTP.ObtenerMensajeError();
-				await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+				await Cargar();
 			}
-		}
-		else
-		{
-			await Cargar();
 		}
 	}
 }

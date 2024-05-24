@@ -127,8 +127,10 @@ else
         }
         else
         {
+            StateHasChanged();
             await swal.FireAsync("Exito", "Su voto ha sido registrado", SweetAlertIcon.Success);
         }
+
     }
 
     private async Task AgregarOQuitarFavoritas()

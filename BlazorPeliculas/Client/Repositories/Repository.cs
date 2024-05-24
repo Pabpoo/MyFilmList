@@ -78,24 +78,6 @@ namespace BlazorPeliculas.Client.Repositories
             return JsonSerializer.Deserialize<T>(respuestaString, jsonSerializerOptions);
         }
 
-        public List<Pelicula> ObtenerPeliculas()
-        {
-            return new List<Pelicula>()
-            {
-                new Pelicula{Titulo = "Cadena Perpetua",
-                    FechaLanzamiento = new DateTime(1995, 2, 24),
-                    Poster = "https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg"
-                },
-                new Pelicula{Titulo = "Moana",
-                    FechaLanzamiento = new DateTime(2016, 11, 23),
-                    Poster = "https://upload.wikimedia.org/wikipedia/en/2/26/Moana_Teaser_Poster.jpg"
-                },
-                new Pelicula{Titulo = "Inception",
-                    FechaLanzamiento = new DateTime(2010, 8, 6),
-                    Poster = "https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg"
-                },
-            };
-        }
     }
 
 }
