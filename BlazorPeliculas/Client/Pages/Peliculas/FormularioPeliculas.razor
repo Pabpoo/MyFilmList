@@ -20,10 +20,11 @@
 	</div>
 
 	<div class="mb-3">
-		<label>Trailer:</label>
+		<label>Tráiler:</label>
 		<div>
-			<InputText class="form-control" @bind-Value="Pelicula.Trailer" />
+			<InputText class="form-control" @bind-Value="Pelicula.Trailer" placeholder="Ejemplo:dWsarJCJqV0" />
 			<ValidationMessage For="@(() => Pelicula.Trailer)" />
+			<p class="text-muted small">Por favor, introduce los carácteres alfanuméricos al final del enlace de youtube, lo que viene después del "=" del correspondiente trailer. "Ejemplo: https://www.youtube.com/watch?v=dWsarJCJqV0 -> dWsarJCJqV0.</p>
 		</div>
 	</div>
 
@@ -36,7 +37,7 @@
 	</div>
 
 	<div class="mb-3">
-		<InputImg Label="Poster" ImagenSeleccionada="ImagenSeleccionada" ImagenURL="@imagenURL" />
+		<InputImg Label="Póster" ImagenSeleccionada="ImagenSeleccionada" ImagenURL="@imagenURL" />
 	</div>
 
 	<div class="mb-3 form-markdown">
@@ -55,7 +56,7 @@
 	</div>
 
 	<div class="mb-3">
-		<label>Actors:</label>
+		<label>Actores:</label>
 		<div>
 			<SelectorMultipleTypeahead Context="Actor" SearchMethod="BuscarActores"
 				ElementosSeleccionados="ActoresSeleccionados">

@@ -28,7 +28,7 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         [HttpPost("crear")]
-        public async Task<ActionResult<UserTokenDTO>> CreateUser([FromBody] UserInfoDTO model)
+        public async Task<ActionResult<UserTokenDTO>> CreateUser([FromBody] LogInDTO model)
         {
             var usuario = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var resultado = await userManager.CreateAsync(usuario, model.Password);
@@ -44,7 +44,7 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserTokenDTO>> Login([FromBody] UserInfoDTO model)
+        public async Task<ActionResult<UserTokenDTO>> Login([FromBody] LogInDTO model)
         {
             var resultado = await signInManager.PasswordSignInAsync(model.Email,
                 model.Password, isPersistent: false, lockoutOnFailure: false);
@@ -68,7 +68,7 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         [HttpPost("adminlogin")]
-        public async Task<ActionResult<UserTokenDTO>> AdminLogin([FromBody] UserInfoDTO model)
+        public async Task<ActionResult<UserTokenDTO>> AdminLogin([FromBody] LogInDTO model)
         {
             var resultado = await signInManager.PasswordSignInAsync(model.Email,
                 model.Password, isPersistent: false, lockoutOnFailure: false);
@@ -97,7 +97,7 @@ namespace BlazorPeliculas.Server.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserTokenDTO>> Renovar()
         {
-            var userInfo = new UserInfoDTO()
+            var userInfo = new LogInDTO()
             {
                 Email = HttpContext.User.Identity.Name
             };
@@ -105,7 +105,7 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         //Este método permite crear un json web token a partir de lo que sea
-        private async Task<UserTokenDTO> BuildToken(UserInfoDTO userInfo)
+        private async Task<UserTokenDTO> BuildToken(LogInDTO userInfo)
         {
             // aquí no podemos colocar informacíón sensible
             var claims = new List<Claim>()

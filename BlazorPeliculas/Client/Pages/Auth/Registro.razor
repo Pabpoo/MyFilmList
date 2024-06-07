@@ -25,6 +25,15 @@
         <div>
             <InputText type="password" class="form-control" @bind-Value="userInfo.Password" />
             <ValidationMessage For=@(() => userInfo.Password) />
+            <p class="text-muted small">La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un carácter especial.</p>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Confirmar Password:</label>
+        <div>
+            <InputText type="password" class="form-control" @bind-Value="userInfo.ConfirmPassword" />
+            <ValidationMessage For=@(() => userInfo.ConfirmPassword) />
         </div>
     </div>
 
@@ -54,8 +63,7 @@
         }
         else
         {
-            await loginService.Login(respuestaHTTP.Response);
-            navigationManager.NavigateTo("");
+            navigationManager.NavigateTo("/Login");
         }
     }
 

@@ -11,8 +11,11 @@
     </div>
 
     <main>
-        <div class="top-row px-4" style="display: flex !important;">
-            <EnlacesAuth />
+        <div class="top-row px-4 d-flex justify-content-between">
+            <a class="btn btn-primary" href='javascript:history.go(-1)'>Volver</a>
+            <div>
+                <EnlacesAuth />
+            </div>
         </div>
 
         <article class="content px-4">
@@ -28,7 +31,7 @@
 @code{
     [CascadingParameter]
     public Task<AuthenticationState> AuthenticationStateTask { get; set; }
-
+    
     protected async override Task OnInitializedAsync()
     {
         await js.InvokeVoidAsync("timerInactivo", DotNetObjectReference.Create(this));

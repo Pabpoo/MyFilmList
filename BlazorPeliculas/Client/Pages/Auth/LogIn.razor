@@ -30,11 +30,11 @@
 </EditForm>
 
 @code {
-    private UserInfoDTO userInfo = new UserInfoDTO();
+    private LogInDTO userInfo = new LogInDTO();
 
     private async Task LoguearUsuario()
     {
-        var respuestaHTTP = await repositorio.Post<UserInfoDTO, UserTokenDTO>("api/cuentas/login", userInfo);
+        var respuestaHTTP = await repositorio.Post<LogInDTO, UserTokenDTO>("api/cuentas/login", userInfo);
 
         if (respuestaHTTP.Error)
         {

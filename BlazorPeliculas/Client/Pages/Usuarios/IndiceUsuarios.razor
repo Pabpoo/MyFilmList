@@ -13,6 +13,7 @@
                 <tr>
                     <th></th>
                     <th>Usuario</th>
+                    <th>Rol</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,12 @@
                         </td>
                         <td>
                             @usuario.Email
+                        </td>
+                        <td>
+                            @foreach (var rol in usuario.Roles)
+                            {
+                                <p>@rol</p>
+                            }
                         </td>
                     </tr>
                 }

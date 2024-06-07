@@ -27,10 +27,24 @@ namespace BlazorPeliculas.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<UsuarioDTO>>> Get([FromQuery] PaginacionDTO paginacion)
         {
-            var queryable = context.Users.AsQueryable();
-            await HttpContext.InsertarParametrosPaginacionEnRespuesta(queryable, paginacion.CantidadRegistros);
-            return await queryable.Paginar(paginacion).Select(x => new UsuarioDTO { Id = x.Id, Email = x.Email }).ToListAsync();
-        }
+			//var queryable = context.Users.AsQueryable();
+			//await HttpContext.InsertarParametrosPaginacionEnRespuesta(queryable, paginacion.CantidadRegistros);
+			//return await queryable.Paginar(paginacion).Select(x => new UsuarioDTO { Id = x.Id, Email = x.Email}).ToListAsync();
+			var queryable = context.Users.AsQueryable();
+			await HttpContext.InsertarParametrosPaginacionEnRespuesta(queryable, paginacion.CantidadRegistros);
+
+			var users = await queryable.Paginar(paginacion).ToListAsync();
+
+			var userDtos = new List<UsuarioDTO>();
+
+			foreach (var user in users)
+			{
+				var roles = await userManager.GetRolesAsync(user);
+				userDtos.Add(new UsuarioDTO { Id = user.Id, Email = user.Email, Roles = roles.ToList() });
+			}
+
+			return userDtos;
+		}
 
         [HttpGet("currentUserId")]
         public async Task<ActionResult<string>> GetCurrentUserId()
